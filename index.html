@@ -3,7 +3,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Путник-Собиратель</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Explorer • Пиксельное приключение</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,193 +15,483 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --accent: #ff006e;
+            --success: #38b000;
+            --warning: #ffbe0b;
+            --background: #0f1120;
+            --surface: #1a1b4b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--background) 0%, #1a1b4b 100%);
+            color: var(--text);
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e6e6e6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 20% 80%, rgba(58, 134, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(131, 56, 236, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .game-container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            background: rgba(26, 27, 75, 0.8);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow:
+                    0 16px 32px rgba(0, 0, 0, 0.3),
+                    0 0 60px rgba(58, 134, 255, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        h1 {
-            margin-bottom: 10px;
-            color: #4ecdc4;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
         }
 
         .subtitle {
-            margin-bottom: 20px;
-            color: #ff6b6b;
-            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
-        .stats {
+        .main-content {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .game-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stats-panel {
+            background: rgba(15, 17, 32, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-container {
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, #70e000 100%);
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 16px rgba(56, 176, 0, 0.4);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .game-wrapper {
+            position: relative;
+        }
+
+        #gameCanvas {
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            display: block;
+        }
+
+        .mobile-controls {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-        }
-
-        #score {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4ecdc4;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
             align-items: center;
-            margin-top: 15px;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 280px;
         }
 
         .instructions {
-            text-align: left;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
+            background: rgba(15, 17, 32, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .instructions h3 {
-            color: #ffd166;
-            margin-bottom: 8px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
 
         .instructions ul {
             list-style: none;
-            padding-left: 0;
         }
 
         .instructions li {
-            margin-bottom: 5px;
-            padding-left: 15px;
+            margin-bottom: 8px;
+            padding-left: 16px;
             position: relative;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .instructions li:before {
-            content: "•";
-            color: #4ecdc4;
+            content: '→';
+            color: var(--primary);
             position: absolute;
             left: 0;
         }
 
-        button {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(58, 134, 255, 0.3);
         }
 
-        button:hover {
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
         }
 
-        button:active {
+        .btn:active {
             transform: translateY(0);
         }
 
-        canvas {
-            border: 3px solid #4ecdc4;
+        .btn-reset {
+            background: linear-gradient(135deg, #ff006e 0%, #c9184a 100%);
+            box-shadow: 0 4px 12px rgba(255, 0, 110, 0.3);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .item-card {
+            background: rgba(15, 17, 32, 0.6);
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
         }
 
-        .items-legend {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-            flex-wrap: wrap;
+        .item-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
-        .item-desc {
+        .item-icon {
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 6px;
+            border-radius: 6px;
+        }
+
+        .stone { background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%); }
+        .grass { background: linear-gradient(135deg, #38b000 0%, #70e000 100%); }
+        .bug { background: linear-gradient(135deg, #ff006e 0%, #c9184a 100%); }
+        .worm { background: linear-gradient(135deg, #ff70a6 0%, #ff0a54 100%); }
+        .mushroom { background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%); }
+
+        .collection-effect {
+            position: absolute;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1rem;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .victory-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 17, 32, 0.95);
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 12px;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
-        .item-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .victory-content {
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .stone { background: #708090; }
-        .grass { background: #32CD32; }
-        .bug { background: #FF6B6B; }
-        .worm { background: #FF69B4; }
-        .mushroom { background: #FF6B6B; }
+        .victory-content h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--warning) 0%, #fb5607 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .sidebar {
+                min-width: auto;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .game-container {
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .title {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                gap: 16px;
+            }
+
+            .mobile-controls {
+                display: grid;
+            }
+
+            #gameCanvas {
+                width: 100%;
+                height: auto;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="game-container">
-    <h1>🌿 Путник-Собиратель 🌿</h1>
-    <div class="subtitle">Собирай дары природы в своем путешествии</div>
-
-    <div class="stats">
-        <div id="score">Собрано: 0/15</div>
-        <button id="resetButton">Новая игра</button>
+    <div class="header">
+        <h1 class="title">Путник</h1>
+        <p class="subtitle">Собирайте сокровища природы в этом пиксельном приключении</p>
     </div>
 
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div class="main-content">
+        <div class="game-section">
+            <div class="stats-panel">
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Прогресс сбора</span>
+                        <span id="score">0/12</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="controls">
-        <div class="instructions">
-            <h3>Управление:</h3>
-            <ul>
-                <li>Стрелки или WASD - движение</li>
-                <li>Собирай все предметы на карте</li>
-                <li>Каждый предмет уникален и ценится!</li>
-            </ul>
+            <div class="game-wrapper" id="gameContainer">
+                <canvas id="gameCanvas"></canvas>
+
+                <div class="mobile-controls">
+                    <div></div>
+                    <button class="control-btn" data-direction="up">↑</button>
+                    <div></div>
+                    <button class="control-btn" data-direction="left">←</button>
+                    <div></div>
+                    <button class="control-btn" data-direction="right">→</button>
+                    <div></div>
+                    <button class="control-btn" data-direction="down">↓</button>
+                    <div></div>
+                </div>
+            </div>
         </div>
 
-        <div class="items-legend">
-            <div class="item-desc">
-                <div class="item-color stone"></div>
-                <span>Камушки</span>
+        <div class="sidebar">
+            <div class="instructions">
+                <h3>Как играть</h3>
+                <ul>
+                    <li>Используйте стрелки или WASD для движения</li>
+                    <li>Собирайте все предметы на карте</li>
+                    <li>Каждый предмет уникален и дает очки</li>
+                    <li>Получите достижение при сборе всех предметов!</li>
+                </ul>
+
+                <div class="items-grid">
+                    <div class="item-card">
+                        <div class="item-icon stone"></div>
+                        <div>Камушки</div>
+                    </div>
+                    <div class="item-card">
+                        <div class="item-icon grass"></div>
+                        <div>Травинки</div>
+                    </div>
+                    <div class="item-card">
+                        <div class="item-icon bug"></div>
+                        <div>Буки</div>
+                    </div>
+                    <div class="item-card">
+                        <div class="item-icon worm"></div>
+                        <div>Черви</div>
+                    </div>
+                    <div class="item-card">
+                        <div class="item-icon mushroom"></div>
+                        <div>Грибы</div>
+                    </div>
+                </div>
             </div>
-            <div class="item-desc">
-                <div class="item-color grass"></div>
-                <span>Травинки</span>
-            </div>
-            <div class="item-desc">
-                <div class="item-color bug"></div>
-                <span>Буки</span>
-            </div>
-            <div class="item-desc">
-                <div class="item-color worm"></div>
-                <span>Черви</span>
-            </div>
-            <div class="item-desc">
-                <div class="item-color mushroom"></div>
-                <span>Грибы</span>
+
+            <div class="action-buttons">
+                <button class="btn" id="resetButton">
+                    <span>🔄</span>
+                    Новая игра
+                </button>
+                <button class="btn btn-reset" onclick="window.location.reload()">
+                    <span>⚡</span>
+                    Перезагрузить
+                </button>
             </div>
         </div>
     </div>
