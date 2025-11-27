@@ -1,0 +1,208 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Путник-Собиратель</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #4ecdc4;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            font-style: italic;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .instructions {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .instructions h3 {
+            color: #ffd166;
+            margin-bottom: 8px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "•";
+            color: #4ecdc4;
+            position: absolute;
+            left: 0;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        canvas {
+            border: 3px solid #4ecdc4;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .items-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .item-desc {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .item-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .stone { background: #708090; }
+        .grass { background: #32CD32; }
+        .bug { background: #FF6B6B; }
+        .worm { background: #FF69B4; }
+        .mushroom { background: #FF6B6B; }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h1>🌿 Путник-Собиратель 🌿</h1>
+    <div class="subtitle">Собирай дары природы в своем путешествии</div>
+
+    <div class="stats">
+        <div id="score">Собрано: 0/15</div>
+        <button id="resetButton">Новая игра</button>
+    </div>
+
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+    <div class="controls">
+        <div class="instructions">
+            <h3>Управление:</h3>
+            <ul>
+                <li>Стрелки или WASD - движение</li>
+                <li>Собирай все предметы на карте</li>
+                <li>Каждый предмет уникален и ценится!</li>
+            </ul>
+        </div>
+
+        <div class="items-legend">
+            <div class="item-desc">
+                <div class="item-color stone"></div>
+                <span>Камушки</span>
+            </div>
+            <div class="item-desc">
+                <div class="item-color grass"></div>
+                <span>Травинки</span>
+            </div>
+            <div class="item-desc">
+                <div class="item-color bug"></div>
+                <span>Буки</span>
+            </div>
+            <div class="item-desc">
+                <div class="item-color worm"></div>
+                <span>Черви</span>
+            </div>
+            <div class="item-desc">
+                <div class="item-color mushroom"></div>
+                <span>Грибы</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
