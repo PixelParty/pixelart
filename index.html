@@ -328,6 +328,29 @@
             background-clip: text;
         }
 
+        .victory-content button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 16px;
+            box-shadow: 0 4px 16px rgba(58, 134, 255, 0.3);
+        }
+
+        .victory-content button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(58, 134, 255, 0.4);
+        }
+
+        .victory-content button:active {
+            transform: translateY(0);
+        }
+
         @keyframes floatUp {
             0% {
                 opacity: 1;

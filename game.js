@@ -22,17 +22,17 @@ var PixelGame = /** @class */ (function () {
         this.player = { x: 0, y: 0 };
         this.items = [];
         this.collected = 0;
-        this.totalItems = 12; // Уменьшим количество для меньшей карты
-        this.gridSize = 16; // Уменьшим размер сетки
+        this.totalItems = 12;
+        this.gridSize = 16;
         this.tileSize = 32;
         this.animationFrame = 0;
         this.isMoving = false;
         this.moveStartTime = 0;
         this.moveFrom = { x: 0, y: 0 };
         this.moveTo = { x: 0, y: 0 };
+        this.victoryModal = null;
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        // Устанавливаем размер canvas в зависимости от новой сетки
         this.canvas.width = this.gridSize * this.tileSize;
         this.canvas.height = this.gridSize * this.tileSize;
         this.init();
@@ -134,6 +134,8 @@ var PixelGame = /** @class */ (function () {
         });
     };
     PixelGame.prototype.resetGame = function () {
+        // Закрываем модальное окно победы если оно открыто
+        this.closeVictoryMessage();
         this.player = {
             x: Math.floor(Math.random() * this.gridSize),
             y: Math.floor(Math.random() * this.gridSize)
@@ -143,6 +145,12 @@ var PixelGame = /** @class */ (function () {
         this.isMoving = false;
         this.updateScore();
         this.updateProgressBar();
+    };
+    PixelGame.prototype.closeVictoryMessage = function () {
+        if (this.victoryModal) {
+            this.victoryModal.remove();
+            this.victoryModal = null;
+        }
     };
     PixelGame.prototype.handleInput = function (e) {
         if (this.isMoving)
@@ -205,10 +213,16 @@ var PixelGame = /** @class */ (function () {
         setTimeout(function () { return effect.remove(); }, 1000);
     };
     PixelGame.prototype.showVictoryMessage = function () {
-        var victory = document.createElement('div');
-        victory.className = 'victory-message';
-        victory.innerHTML = "\n            <div class=\"victory-content\">\n                <h2>\uD83C\uDF89 \u041F\u043E\u0437\u0434\u0440\u0430\u0432\u043B\u044F\u0435\u043C! \uD83C\uDF89</h2>\n                <p>\u0412\u044B \u0441\u043E\u0431\u0440\u0430\u043B\u0438 \u0432\u0441\u0435 ".concat(this.totalItems, " \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432!</p>\n                <button onclick=\"this.closest('.victory-message').remove()\">\u0418\u0433\u0440\u0430\u0442\u044C \u0441\u043D\u043E\u0432\u0430</button>\n            </div>\n        ");
-        document.body.appendChild(victory);
+        var _this = this;
+        this.victoryModal = document.createElement('div');
+        this.victoryModal.className = 'victory-message';
+        this.victoryModal.innerHTML = "\n            <div class=\"victory-content\">\n                <h2>\uD83C\uDF89 \u041F\u043E\u0437\u0434\u0440\u0430\u0432\u043B\u044F\u0435\u043C! \uD83C\uDF89</h2>\n                <p>\u0412\u044B \u0441\u043E\u0431\u0440\u0430\u043B\u0438 \u0432\u0441\u0435 ".concat(this.totalItems, " \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u043E\u0432!</p>\n                <button id=\"playAgainButton\">\u0418\u0433\u0440\u0430\u0442\u044C \u0441\u043D\u043E\u0432\u0430</button>\n            </div>\n        ");
+        document.body.appendChild(this.victoryModal);
+        // Добавляем обработчик для кнопки "Играть снова"
+        var playAgainButton = document.getElementById('playAgainButton');
+        playAgainButton === null || playAgainButton === void 0 ? void 0 : playAgainButton.addEventListener('click', function () {
+            _this.resetGame();
+        });
     };
     PixelGame.prototype.updateScore = function () {
         var scoreElement = document.getElementById('score');

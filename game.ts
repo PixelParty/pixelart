@@ -22,20 +22,20 @@ class PixelGame {
     private player: Position = { x: 0, y: 0 };
     private items: GameItem[] = [];
     private collected: number = 0;
-    private totalItems: number = 12; // Уменьшим количество для меньшей карты
-    private readonly gridSize: number = 16; // Уменьшим размер сетки
+    private totalItems: number = 12;
+    private readonly gridSize: number = 16;
     private readonly tileSize: number = 32;
     private animationFrame: number = 0;
     private isMoving: boolean = false;
     private moveStartTime: number = 0;
     private moveFrom: Position = { x: 0, y: 0 };
     private moveTo: Position = { x: 0, y: 0 };
+    private victoryModal: HTMLDivElement | null = null;
 
     constructor() {
         this.canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
         this.ctx = this.canvas.getContext('2d')!;
 
-        // Устанавливаем размер canvas в зависимости от новой сетки
         this.canvas.width = this.gridSize * this.tileSize;
         this.canvas.height = this.gridSize * this.tileSize;
 
@@ -156,7 +156,10 @@ class PixelGame {
         );
     }
 
-    private resetGame() {
+    public resetGame() {
+        // Закрываем модальное окно победы если оно открыто
+        this.closeVictoryMessage();
+
         this.player = {
             x: Math.floor(Math.random() * this.gridSize),
             y: Math.floor(Math.random() * this.gridSize)
@@ -166,6 +169,13 @@ class PixelGame {
         this.isMoving = false;
         this.updateScore();
         this.updateProgressBar();
+    }
+
+    private closeVictoryMessage() {
+        if (this.victoryModal) {
+            this.victoryModal.remove();
+            this.victoryModal = null;
+        }
     }
 
     private handleInput(e: KeyboardEvent) {
@@ -237,16 +247,22 @@ class PixelGame {
     }
 
     private showVictoryMessage() {
-        const victory = document.createElement('div');
-        victory.className = 'victory-message';
-        victory.innerHTML = `
+        this.victoryModal = document.createElement('div');
+        this.victoryModal.className = 'victory-message';
+        this.victoryModal.innerHTML = `
             <div class="victory-content">
                 <h2>🎉 Поздравляем! 🎉</h2>
                 <p>Вы собрали все ${this.totalItems} предметов!</p>
-                <button onclick="this.closest('.victory-message').remove()">Играть снова</button>
+                <button id="playAgainButton">Играть снова</button>
             </div>
         `;
-        document.body.appendChild(victory);
+        document.body.appendChild(this.victoryModal);
+
+        // Добавляем обработчик для кнопки "Играть снова"
+        const playAgainButton = document.getElementById('playAgainButton');
+        playAgainButton?.addEventListener('click', () => {
+            this.resetGame();
+        });
     }
 
     private updateScore() {
